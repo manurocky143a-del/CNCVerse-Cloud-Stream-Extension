@@ -17,6 +17,9 @@ import com.lagradost.api.Log
 import org.json.JSONObject
 import java.util.UUID
 import okhttp3.Request
+import okhttp3.Interceptor
+import okhttp3.OkHttpClient
+import okhttp3.Response
 import java.util.Base64
 
 val JSONParser = object : ResponseParser {
@@ -43,7 +46,25 @@ val JSONParser = object : ResponseParser {
     }
 }
 
-val app = Requests(responseParser = JSONParser).apply {
+val app = Requests(
+    baseClient = OkHttpClient.Builder()
+        .addInterceptor(Interceptor { chain ->
+            val request = chain.request()
+            val response = chain.proceed(request)
+            if (response.code in 300..399) {
+                val location = response.header("Location")
+                if (location != null && location.contains("https://net50.cc")) {
+                    val newLocation = location.replace("https://net50.cc", "http://net50.cc")
+                    return@Interceptor response.newBuilder()
+                        .header("Location", newLocation)
+                        .build()
+                }
+            }
+            response
+        })
+        .build(),
+    responseParser = JSONParser
+).apply {
     defaultHeaders = mapOf("User-Agent" to USER_AGENT)
 }
 
@@ -118,7 +139,7 @@ suspend fun bypass(mainUrl: String): String {
             .followSslRedirects(false)
             .build()
         val request = Request.Builder()
-            .url("https://net77.cc/verify.php")
+            .url("https://net52.cc/verify.php")
             .post(formBody)
             .apply {
                 headers.forEach { (key, value) ->
