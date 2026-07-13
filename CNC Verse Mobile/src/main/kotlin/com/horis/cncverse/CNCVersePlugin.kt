@@ -17,6 +17,7 @@ open class CNCVersePlugin: Plugin() {
         registerMainAPI(NetflixMirrorProvider())
         registerMainAPI(PrimeVideoMirrorProvider())
         registerMainAPI(HotStarMirrorProvider())
+        registerMainAPI(Tamilian())
         val sharedPref = context.getSharedPreferences("CNCVerseStudios", Context.MODE_PRIVATE)
         val studioOptions = listOf(
             StudioOption("studio_disney", "Disney", "disney"),

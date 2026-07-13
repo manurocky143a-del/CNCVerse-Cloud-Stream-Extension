@@ -375,14 +375,21 @@ class NetflixMirrorProvider : MainAPI() {
         return true
     }
 
-    @Suppress("ObjectLiteralToLambda")
+        @Suppress("ObjectLiteralToLambda")
     override fun getVideoInterceptor(extractorLink: ExtractorLink): Interceptor? {
         return object : Interceptor {
             override fun intercept(chain: Interceptor.Chain): Response {
                 val request = chain.request()
-                if (request.url.toString().contains(".m3u8")) {
+                val url = request.url.toString()
+                if (url.contains(".m3u8") || url.contains("imgcdn.kim") || url.contains("freecdn")) {
+                    val savedCookie = NetflixMirrorStorage.getCookie().first
+                    val cookieVal = if (!savedCookie.isNullOrEmpty()) {
+                        "hd=on; t_hash_t=$savedCookie"
+                    } else {
+                        "hd=on"
+                    }
                     val newRequest = request.newBuilder()
-                        .header("Cookie", "hd=on")
+                        .header("Cookie", cookieVal)
                         .build()
                     return chain.proceed(newRequest)
                 }

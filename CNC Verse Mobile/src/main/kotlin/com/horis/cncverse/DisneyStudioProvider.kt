@@ -1,5 +1,7 @@
 ﻿package com.horis.cncverse
 
+import okhttp3.Interceptor
+import okhttp3.Response
 import android.content.Context
 import com.horis.cncverse.entities.EpisodesData
 import com.horis.cncverse.entities.PostData
@@ -362,6 +364,29 @@ open class DisneyStudioProvider(
                     }
                 )
             } catch (e: Exception) { }
+        }
+    }
+
+        @Suppress("ObjectLiteralToLambda")
+    override fun getVideoInterceptor(extractorLink: ExtractorLink): Interceptor? {
+        return object : Interceptor {
+            override fun intercept(chain: Interceptor.Chain): Response {
+                val request = chain.request()
+                val url = request.url.toString()
+                if (url.contains(".m3u8") || url.contains("imgcdn.kim") || url.contains("freecdn")) {
+                    val savedCookie = NetflixMirrorStorage.getCookie().first
+                    val cookieVal = if (!savedCookie.isNullOrEmpty()) {
+                        "hd=on; t_hash_t=$savedCookie"
+                    } else {
+                        "hd=on"
+                    }
+                    val newRequest = request.newBuilder()
+                        .header("Cookie", cookieVal)
+                        .build()
+                    return chain.proceed(newRequest)
+                }
+                return chain.proceed(request)
+            }
         }
     }
 
