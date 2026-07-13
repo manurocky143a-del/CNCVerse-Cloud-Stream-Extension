@@ -1,0 +1,8 @@
+{
+  "name": "CNCVerse Extension",
+  "description": "CNCVerse CloudStream Extensions repository",
+  "manifestVersion": 1,
+  "pluginLists": [
+    "https://raw.githubusercontent.com/manurocky143a-del/CNCVerse-Cloud-Stream-Extension/master/builds/plugins.json"
+  ]
+}
