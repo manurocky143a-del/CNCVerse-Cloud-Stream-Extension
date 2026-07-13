@@ -48,7 +48,7 @@ val JSONParser = object : ResponseParser {
 
 val app = Requests(
     baseClient = OkHttpClient.Builder()
-        .addInterceptor(Interceptor { chain ->
+        .addNetworkInterceptor(Interceptor { chain ->
             val request = chain.request()
             val response = chain.proceed(request)
             if (response.code in 300..399) {
