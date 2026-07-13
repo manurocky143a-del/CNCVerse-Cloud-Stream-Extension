@@ -1,4 +1,4 @@
-﻿package com.horis.cncverse
+package com.horis.cncverse
 
 import com.fasterxml.jackson.annotation.JsonProperty
 import com.lagradost.cloudstream3.SubtitleFile
@@ -37,6 +37,7 @@ class Tamilian : TmdbProvider() {
     override val supportedTypes = setOf(
         TvType.Movie,
     )
+    override var mainUrl = HOST
 
     companion object
     {
@@ -74,7 +75,7 @@ class Tamilian : TmdbProvider() {
                     newExtractorLink(
                         name,
                         name,
-                        url = it.videoSource,
+                        url = it.securedLink,
                         ExtractorLinkType.M3U8
                     ) {
                         this.referer = "$mainUrl/"
