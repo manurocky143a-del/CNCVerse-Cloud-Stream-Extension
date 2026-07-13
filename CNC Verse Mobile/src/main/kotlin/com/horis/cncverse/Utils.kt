@@ -237,6 +237,13 @@ suspend fun resolveApiUrl(): String {
 fun buildNewTvHeaders(ott: String, extra: Map<String, String> = emptyMap()): Map<String, String> {
     val result = newTvBaseHeaders.toMutableMap()
     result["Ott"] = ott
+    val savedCookie = NetflixMirrorStorage.getCookie().first
+    val cookieVal = if (!savedCookie.isNullOrEmpty()) {
+        "hd=on; ott=$ott; t_hash_t=$savedCookie;"
+    } else {
+        "hd=on; ott=$ott;"
+    }
+    result["Cookie"] = cookieVal
     extra.forEach { (key, value) ->
         result[key] = value
     }
