@@ -115,7 +115,14 @@ class Tamilian : TmdbProvider() {
         val playerUrl = "$HOST/player/index.php?data=$token&do=getVideo"
         println("[TAMILIAN_DEBUG] POSTing player API: $playerUrl")
         val playerResponse = try {
-            app.post(playerUrl, headers = mapOf("X-Requested-With" to "XMLHttpRequest"))
+            app.post(
+                playerUrl,
+                headers = mapOf(
+                    "X-Requested-With" to "XMLHttpRequest",
+                    "Origin" to HOST,
+                    "Referer" to pageUrl
+                )
+            )
         } catch(e: Exception) {
             println("[TAMILIAN_DEBUG] POST to player API failed: ${e.message}")
             return false
