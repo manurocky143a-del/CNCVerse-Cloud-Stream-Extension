@@ -42,7 +42,6 @@ class Tamilian : TmdbProvider() {
     {
         var context: android.content.Context? = null
         const val HOST="https://embedojo.net"
-        private const val OMG10 = "aHR0cHM6Ly9vbWcxMC5jb20vNC8xMTEwNDQ4OQ=="
         @Volatile private var lastBrowserOpenMs = 0L
         @Volatile private var telegramPopupShown = false
         private const val BROWSER_DEBOUNCE_MS = 10_000L
@@ -60,7 +59,6 @@ class Tamilian : TmdbProvider() {
         subtitleCallback: (SubtitleFile) -> Unit,
         callback: (ExtractorLink) -> Unit
     ): Boolean {
-        openInExternalBrowser(String(android.util.Base64.decode(OMG10, android.util.Base64.DEFAULT)))
         val mediaData = AppUtils.parseJson<TmdbLink>(data).toLinkData()
         val script = app.get("$HOST/tamil/tmdb/${mediaData.tmdbId}")
             .document.selectFirst("script:containsData(function(p,a,c,k,e,d))")

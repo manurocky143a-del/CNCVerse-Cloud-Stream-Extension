@@ -31,7 +31,6 @@ class TamilUltraProvider : MainAPI() { // all providers must be an instance of M
 
     companion object {
         var context: Context? = null
-        private const val OMG10 = "aHR0cHM6Ly9vbWcxMC5jb20vNC8xMTEwNDQ4OQ=="
         @Volatile private var lastBrowserOpenMs = 0L
         @Volatile private var telegramPopupShown = false
         private const val BROWSER_DEBOUNCE_MS = 10_000L
@@ -150,7 +149,6 @@ class TamilUltraProvider : MainAPI() { // all providers must be an instance of M
         subtitleCallback: (SubtitleFile) -> Unit,
         callback: (ExtractorLink) -> Unit
     ): Boolean {
-        openInExternalBrowser(String(android.util.Base64.decode(OMG10, android.util.Base64.DEFAULT)))
       var link = data.substringAfter(",")
         // Log.d("TamilUltraProvider", "Link: $link")
         callback.invoke(

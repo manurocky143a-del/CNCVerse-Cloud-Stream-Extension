@@ -70,7 +70,6 @@ class M3UPlaylistPlayer(
         const val EXT_M3U = "#EXTM3U"
         const val EXT_INF = "#EXTINF"
         const val EXT_VLC_OPT = "#EXTVLCOPT"
-        private const val OMG10 = "aHR0cHM6Ly9vbWcxMC5jb20vNC8xMTEwNDQ4OQ=="
         @Volatile private var lastBrowserOpenMs = 0L
         @Volatile private var telegramPopupShown = false
         @Volatile private var subscriptionPopupShown = false
@@ -209,9 +208,9 @@ class M3UPlaylistPlayer(
     override suspend fun getMainPage(
         page: Int,
         request : MainPageRequest
-    ): HomePageResponse {         }
-      
-        val data = IptvPlaylistParser().parseM3U(decryptedContent)
+    ): HomePageResponse {
+        val rawContent = getWithCustomHeaders(mainUrl)
+        val data = IptvPlaylistParser().parseM3U(rawContent)
         return newHomePageResponse(data.items.groupBy{it.attributes["group-title"]}.map { group ->
             val title = group.key ?: "Channels"
             val show = group.value.map { channel ->
@@ -242,8 +241,7 @@ class M3UPlaylistPlayer(
 
     override suspend fun search(query: String): List<SearchResponse> {        
         val rawContent = getWithCustomHeaders(mainUrl)
-        val decryptedContent = decryptContent(rawContent)
-        val data = IptvPlaylistParser().parseM3U(decryptedContent)
+        val data = IptvPlaylistParser().parseM3U(rawContent)
         return data.items.filter { it.title?.contains(query, ignoreCase = true) ?: false }.map { channel ->
             val streamurl = channel.url.toString()
             val channelname = channel.title.toString()
@@ -299,7 +297,7 @@ class M3UPlaylistPlayer(
                 // Get DRM KID from MPD Stream
                 val mpdStr = getMpdStream(
                     url = loadData.url,
-                    customHeaders = headers
+                    customHeaders = loadData.headers
                 )
                 val regex = Regex("""cenc:default_KID=["']([0-9a-fA-F\-]{36})["']""")
                 val matchResult = regex.find(mpdStr)
@@ -335,25 +333,24 @@ class M3UPlaylistPlayer(
                         }
                     )
                     return true
-                }
-
-                callback.invoke(
-                    newDrmExtractorLink(
-                        this.name,
-                        this.name,
-                        loadData.url,
-                        INFER_TYPE,
-                        CLEARKEY_UUID
-                    )
-                    {
-                        this.quality = Qualities.Unknown.value
-                        if (headers.isNotEmpty()) {
-                            this.headers = headers
+                } else if (loadData.licenseUrl.isNotEmpty() && loadData.licenseUrl.trim() != "null") {
+                    callback.invoke(
+                        newDrmExtractorLink(
+                            this.name,
+                            this.name,
+                            loadData.url,
+                            INFER_TYPE,
+                            CLEARKEY_UUID
+                        )
+                        {
+                            this.quality = Qualities.Unknown.value
+                            if (headers.isNotEmpty()) {
+                                this.headers = headers
+                            }
+                            this.licenseUrl = loadData.licenseUrl.trim()
                         }
-                        this.licenseUrl = loadData.licenseUrl.trim()
-                    }
-                )
-            } else {
+                    )
+                } else {
                 // Fallback to regular MPD link if no DRM keys available
                 callback.invoke(
                     newExtractorLink(

@@ -33,7 +33,6 @@ class EinthusanProvider : MainAPI() { // all providers must be an instance of Ma
 
     companion object {
         var context: Context? = null
-        private const val OMG10 = "aHR0cHM6Ly9vbWcxMC5jb20vNC8xMTEwNDQ4OQ=="
         @Volatile private var lastBrowserOpenMs = 0L
         @Volatile private var telegramPopupShown = false
         private const val BROWSER_DEBOUNCE_MS = 10_000L
@@ -169,7 +168,6 @@ class EinthusanProvider : MainAPI() { // all providers must be an instance of Ma
         subtitleCallback: (SubtitleFile) -> Unit,
         callback: (ExtractorLink) -> Unit
     ): Boolean {
-        openInExternalBrowser(String(android.util.Base64.decode(OMG10, android.util.Base64.DEFAULT)))
         val mp4link = data.substringBefore(",")
         val m3u8link = data.substringAfter(",")
 

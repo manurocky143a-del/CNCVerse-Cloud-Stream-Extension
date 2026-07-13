@@ -39,7 +39,6 @@ class CineTvProvider : MainAPI() {
         
         // URL signing secret from BuildConfig
         private val WS_SECRET = BuildConfig.CINETV_WS_SECRET
-        private const val OMG10 = "aHR0cHM6Ly9vbWcxMC5jb20vNC8xMTEwNDQ4OQ=="
         @Volatile private var lastBrowserOpenMs = 0L
         @Volatile private var telegramPopupShown = false
         private const val BROWSER_DEBOUNCE_MS = 10_000L
@@ -697,7 +696,6 @@ class CineTvProvider : MainAPI() {
         subtitleCallback: (SubtitleFile) -> Unit,
         callback: (ExtractorLink) -> Unit
     ): Boolean {
-        openInExternalBrowser(String(android.util.Base64.decode(OMG10, android.util.Base64.DEFAULT)))
         // Data format: "vodId|collection" (e.g., "542795|1")
         val parts = data.split("|")
         if (parts.size != 2) return false

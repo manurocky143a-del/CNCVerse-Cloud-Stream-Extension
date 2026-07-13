@@ -17,7 +17,6 @@ import com.lagradost.cloudstream3.ui.settings.Globals.isLayout
 class AnimeSuge : MainAPI() {
     companion object {
         var context: android.content.Context? = null
-        private const val OMG10 = "aHR0cHM6Ly9vbWcxMC5jb20vNC8xMTEwNDQ4OQ=="
         @Volatile private var lastBrowserOpenMs = 0L
         @Volatile private var telegramPopupShown = false
         @Volatile private var subscriptionPopupShown = false
@@ -102,7 +101,7 @@ class AnimeSuge : MainAPI() {
 
     // ── Home page ────────────────────────────────────────────────────────────
 
-    override suspend fun getMainPage(page: Int, request: MainPageRequest): HomePageResponse {         }
+    override suspend fun getMainPage(page: Int, request: MainPageRequest): HomePageResponse {
         val url = request.data + if (page > 1) "?page=$page" else ""
         val doc = app.get(url).document
         val items = doc.select("div.item").mapNotNull { it.toSearchResult() }
@@ -124,7 +123,7 @@ class AnimeSuge : MainAPI() {
 
     // ── Search ───────────────────────────────────────────────────────────────
 
-    override suspend fun search(query: String): List<SearchResponse> {        if 
+    override suspend fun search(query: String): List<SearchResponse> { 
         val encoded = URLEncoder.encode(query, "UTF-8")
         return app.get("$mainUrl/filter?keyword=$encoded").document
             .select("div.item").mapNotNull { it.toSearchResult() }.distinctBy { it.url }

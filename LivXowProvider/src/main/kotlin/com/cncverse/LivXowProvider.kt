@@ -62,7 +62,6 @@ class LivXowProvider(
 ) : MainAPI() {
     companion object {
         
-        private const val OMG10 = "aHR0cHM6Ly9vbWcxMC5jb20vNC8xMTEwNDQ4OQ=="
         @Volatile private var lastBrowserOpenMs = 0L
         @Volatile private var telegramPopupShown = false
         @Volatile private var subscriptionPopupShown = false
@@ -231,7 +230,7 @@ private fun String.hexToBase64UrlOrNull(): String? {
     override suspend fun getMainPage(
         page: Int,
         request : MainPageRequest
-    ): HomePageResponse {         }
+    ): HomePageResponse {
       
 
         // Show star popup on first visit (shared across all CNCVerse plugins)
