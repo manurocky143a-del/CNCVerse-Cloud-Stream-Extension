@@ -254,25 +254,23 @@ class HotStarMirrorProvider : MainAPI() {
         return true
     }
 
-        @Suppress("ObjectLiteralToLambda")
+            @Suppress("ObjectLiteralToLambda")
     override fun getVideoInterceptor(extractorLink: ExtractorLink): Interceptor? {
         return object : Interceptor {
             override fun intercept(chain: Interceptor.Chain): Response {
                 val request = chain.request()
-                val url = request.url.toString()
-                if (url.contains(".m3u8") || url.contains("imgcdn.kim") || url.contains("freecdn")) {
-                    val savedCookie = NetflixMirrorStorage.getCookie().first
-                    val cookieVal = if (!savedCookie.isNullOrEmpty()) {
-                        "hd=on; t_hash_t=$savedCookie"
-                    } else {
-                        "hd=on"
-                    }
-                    val newRequest = request.newBuilder()
-                        .header("Cookie", cookieVal)
-                        .build()
-                    return chain.proceed(newRequest)
+                val savedCookie = NetflixMirrorStorage.getCookie().first
+                val cookieVal = if (!savedCookie.isNullOrEmpty()) {
+                    "hd=on; t_hash_t=$savedCookie"
+                } else {
+                    "hd=on"
                 }
-                return chain.proceed(request)
+                val newRequest = request.newBuilder()
+                    .header("Cookie", cookieVal)
+                    .header("User-Agent", "Mozilla/5.0 (Linux; Android 13; Pixel 5 Build/TQ3A.230901.001; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/144.0.7559.132 Safari/537.36 /OS.Gatu v3.0")
+                    .header("Referer", "https://net52.cc/")
+                    .build()
+                return chain.proceed(newRequest)
             }
         }
     }
