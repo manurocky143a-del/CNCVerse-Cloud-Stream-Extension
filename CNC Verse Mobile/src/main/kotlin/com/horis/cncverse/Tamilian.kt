@@ -37,7 +37,6 @@ class Tamilian : TmdbProvider() {
     override val supportedTypes = setOf(
         TvType.Movie,
     )
-    override var mainUrl = HOST
 
     companion object
     {
@@ -60,30 +59,101 @@ class Tamilian : TmdbProvider() {
         subtitleCallback: (SubtitleFile) -> Unit,
         callback: (ExtractorLink) -> Unit
     ): Boolean {
-        val mediaData = AppUtils.parseJson<TmdbLink>(data).toLinkData()
-        val script = app.get("$HOST/tamil/tmdb/${mediaData.tmdbId}")
-            .document.selectFirst("script:containsData(function(p,a,c,k,e,d))")
-            ?.data()?.let { getAndUnpack(it) }
+        println("[TAMILIAN_DEBUG] loadLinks started with data: $data")
+        val mediaData = try {
+            AppUtils.parseJson<TmdbLink>(data).toLinkData()
+        } catch(e: Exception) {
+            println("[TAMILIAN_DEBUG] Failed to parse TmdbLink: ${e.message}")
+            return false
+        }
+        println("[TAMILIAN_DEBUG] Parsed LinkData: tmdbId=${mediaData.tmdbId}, title=${mediaData.title}")
+        
+        if (mediaData.tmdbId == null) {
+            println("[TAMILIAN_DEBUG] tmdbId is null, cannot fetch links")
+            return false
+        }
 
-        val token = script?.substringAfter("FirePlayer(\"")?.substringBefore("\",")
-        val m3u8 = app.post("$HOST/player/index.php?data=$token&do=getVideo", headers = mapOf("X-Requested-With" to "XMLHttpRequest"))
-            .parsedSafe<VideoData>()
-        val headers= mapOf("Origin" to "https://embedojo.net")
-        m3u8?.let {
-            safeApiCall {
-                callback.invoke(
-                    newExtractorLink(
-                        name,
-                        name,
-                        url = it.securedLink,
-                        ExtractorLinkType.M3U8
-                    ) {
-                        this.referer = "$mainUrl/"
-                        this.quality = Qualities.P1080.value
-                        this.headers = headers
-                    }
-                )
-            }
+        val pageUrl = "$HOST/tamil/tmdb/${mediaData.tmdbId}"
+        println("[TAMILIAN_DEBUG] Requesting movie page: $pageUrl")
+        val pageResponse = try {
+            app.get(pageUrl)
+        } catch(e: Exception) {
+            println("[TAMILIAN_DEBUG] HTTP GET to movie page failed: ${e.message}")
+            return false
+        }
+        println("[TAMILIAN_DEBUG] Movie page HTTP status: ${pageResponse.code}")
+        
+        val doc = pageResponse.document
+        val scriptElement = doc.selectFirst("script:containsData(function(p,a,c,k,e,d))")
+        if (scriptElement == null) {
+            println("[TAMILIAN_DEBUG] Packed script element NOT found in page!")
+            println("[TAMILIAN_DEBUG] HTML body snippet: ${pageResponse.text.take(500)}")
+            return false
+        }
+        
+        val scriptData = scriptElement.data()
+        val unpacked = try {
+            getAndUnpack(scriptData)
+        } catch(e: Exception) {
+            println("[TAMILIAN_DEBUG] Unpacker failed: ${e.message}")
+            null
+        }
+        
+        if (unpacked == null) {
+            println("[TAMILIAN_DEBUG] Unpacked script is null!")
+            return false
+        }
+
+        val token = unpacked.substringAfter("FirePlayer(\"").substringBefore("\",")
+        if (token == unpacked || token.isEmpty()) {
+            println("[TAMILIAN_DEBUG] Failed to parse FirePlayer token from script!")
+            println("[TAMILIAN_DEBUG] Unpacked snippet: ${unpacked.take(500)}")
+            return false
+        }
+        println("[TAMILIAN_DEBUG] Found token: $token")
+
+        val playerUrl = "$HOST/player/index.php?data=$token&do=getVideo"
+        println("[TAMILIAN_DEBUG] POSTing player API: $playerUrl")
+        val playerResponse = try {
+            app.post(playerUrl, headers = mapOf("X-Requested-With" to "XMLHttpRequest"))
+        } catch(e: Exception) {
+            println("[TAMILIAN_DEBUG] POST to player API failed: ${e.message}")
+            return false
+        }
+        
+        println("[TAMILIAN_DEBUG] Player API HTTP status: ${playerResponse.code}")
+        println("[TAMILIAN_DEBUG] Player API response body: ${playerResponse.text}")
+        
+        val m3u8 = try {
+            playerResponse.parsedSafe<VideoData>()
+        } catch(e: Exception) {
+            println("[TAMILIAN_DEBUG] Jackson parsing of VideoData failed: ${e.message}")
+            null
+        }
+        
+        if (m3u8 == null) {
+            println("[TAMILIAN_DEBUG] m3u8 VideoData is null")
+            return false
+        }
+
+        println("[TAMILIAN_DEBUG] Extracted videoSource: ${m3u8.videoSource}")
+        println("[TAMILIAN_DEBUG] Extracted securedLink: ${m3u8.securedLink}")
+
+        val headers = mapOf("Origin" to "https://embedojo.net")
+        safeApiCall {
+            callback.invoke(
+                newExtractorLink(
+                    name,
+                    name,
+                    url = m3u8.videoSource,
+                    ExtractorLinkType.M3U8
+                ) {
+                    this.referer = "$mainUrl/"
+                    this.quality = Qualities.P1080.value
+                    this.headers = headers
+                }
+            )
+            println("[TAMILIAN_DEBUG] Invoked callback with videoSource.")
         }
         return true
     }
