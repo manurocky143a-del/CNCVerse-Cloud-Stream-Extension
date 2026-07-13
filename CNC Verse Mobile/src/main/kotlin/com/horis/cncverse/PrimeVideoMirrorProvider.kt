@@ -1,4 +1,4 @@
-﻿package com.horis.cncverse
+package com.horis.cncverse
 
 import android.content.Context
 import com.horis.cncverse.entities.EpisodesData
@@ -36,7 +36,7 @@ class PrimeVideoMirrorProvider : MainAPI() {
     )
     override var lang = "ta"
 
-    override var mainUrl = "https://net52.cc"
+    override var mainUrl = "https://net77.cc"
     override var name = "Prime Video"
 
     override val hasMainPage = true

@@ -1,4 +1,4 @@
-﻿package com.horis.cncverse
+package com.horis.cncverse
 
 import okhttp3.Interceptor
 import okhttp3.Response
@@ -37,7 +37,7 @@ open class DisneyStudioProvider(
     )
     override var lang = "ta"
 
-    override var mainUrl = "https://net52.cc"
+    override var mainUrl = "https://net77.cc"
     override var name = displayName
 
     override val hasMainPage = true
