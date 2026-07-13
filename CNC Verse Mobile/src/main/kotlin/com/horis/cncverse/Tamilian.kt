@@ -153,7 +153,7 @@ class Tamilian : TmdbProvider() {
                 newExtractorLink(
                     name,
                     name,
-                    url = m3u8.videoSource,
+                    url = m3u8.securedLink,
                     ExtractorLinkType.M3U8
                 ) {
                     this.referer = "$mainUrl/"
@@ -161,7 +161,7 @@ class Tamilian : TmdbProvider() {
                     this.headers = headers
                 }
             )
-            println("[TAMILIAN_DEBUG] Invoked callback with videoSource.")
+            println("[TAMILIAN_DEBUG] Invoked callback with securedLink.")
         }
         return true
     }
