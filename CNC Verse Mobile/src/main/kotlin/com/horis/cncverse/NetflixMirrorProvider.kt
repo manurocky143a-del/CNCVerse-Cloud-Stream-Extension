@@ -70,7 +70,7 @@ class NetflixMirrorProvider : MainAPI() {
         )
         val document = app.get(
             "$mainUrl/mobile/home?app=1",
-            cookies = cookies,
+            
             headers = headers,
             referer = "$mainUrl/mobile/home?app=1",
         ).document
@@ -108,7 +108,7 @@ class NetflixMirrorProvider : MainAPI() {
             "ott" to "nf"
         )
         val url = "$mainUrl/mobile/search.php?s=$query&t=${APIHolder.unixTime}"
-        val data = app.get(url, referer = "$mainUrl/home", cookies = cookies).parsed<SearchData>()
+        val data = app.get(url, referer = "$mainUrl/home").parsed<SearchData>()
 
         return data.searchResult.map {
             newAnimeSearchResponse(it.t, Id(it.id).toJson()) {
@@ -130,7 +130,7 @@ class NetflixMirrorProvider : MainAPI() {
             "$mainUrl/mobile/post.php?id=$id&t=${APIHolder.unixTime}",
             headers,
             referer = "$mainUrl/home",
-            cookies = cookies
+            
         ).parsed<PostData>()
 
         val episodes = arrayListOf<Episode>()
@@ -212,7 +212,7 @@ class NetflixMirrorProvider : MainAPI() {
                 "$mainUrl/mobile/episodes.php?s=$sid&series=$eid&t=${APIHolder.unixTime}&page=$pg",
                 headers,
                 referer = "$mainUrl/home",
-                cookies = cookies
+                
             ).parsed<EpisodesData>()
             data.episodes?.mapTo(episodes) {
                 newEpisode(LoadData(title, it.id)) {
@@ -357,7 +357,6 @@ class NetflixMirrorProvider : MainAPI() {
         subtitleCallback: (SubtitleFile) -> Unit,
         callback: (ExtractorLink) -> Unit
     ): Boolean {
-        val cookie = bypass(mainUrl)
         val apiBase = resolveApiUrl()
         val id = parseJson<LoadData>(data).id
         val response = app.get(
@@ -376,32 +375,7 @@ class NetflixMirrorProvider : MainAPI() {
         return true
     }
 
-                @Suppress("ObjectLiteralToLambda")
-    override fun getVideoInterceptor(extractorLink: ExtractorLink): Interceptor? {
-        return object : Interceptor {
-            override fun intercept(chain: Interceptor.Chain): Response {
-                val request = chain.request()
-                val url = request.url.toString()
-                val savedCookie = NetflixMirrorStorage.getCookie().first
-                val cookieVal = if (!savedCookie.isNullOrEmpty()) {
-                    "hd=on; t_hash_t=$savedCookie"
-                } else {
-                    "hd=on"
-                }
-                val refererVal = if (url.contains("imgcdn.kim") || url.contains("freecdn")) {
-                    "https://tv.imgcdn.kim/"
-                } else {
-                    extractorLink.referer ?: "https://net52.cc/"
-                }
-                val newRequest = request.newBuilder()
-                    .header("Cookie", cookieVal)
-                    .header("User-Agent", "Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Mobile Safari/537.36")
-                    .header("Referer", refererVal)
-                    .build()
-                return chain.proceed(newRequest)
-            }
-        }
-    }
+                
 
     data class Id(
         val id: String
