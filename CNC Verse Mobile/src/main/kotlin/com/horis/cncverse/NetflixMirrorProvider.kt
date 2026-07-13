@@ -375,7 +375,37 @@ class NetflixMirrorProvider : MainAPI() {
         return true
     }
 
-                
+    @Suppress("ObjectLiteralToLambda")
+    override fun getVideoInterceptor(extractorLink: ExtractorLink): Interceptor? {
+        return object : Interceptor {
+            override fun intercept(chain: Interceptor.Chain): Response {
+                val request = chain.request()
+                val url = request.url.toString()
+                val webViewCookie = try {
+                    val manager = android.webkit.CookieManager.getInstance()
+                    manager.getCookie("https://net77.cc") ?: manager.getCookie("https://net52.cc")
+                } catch (_: Exception) {
+                    null
+                }
+                val cookieVal = if (!webViewCookie.isNullOrEmpty()) {
+                    "hd=on; $webViewCookie"
+                } else {
+                    "hd=on"
+                }
+                val refererVal = if (url.contains("imgcdn.kim") || url.contains("freecdn")) {
+                    "https://tv.imgcdn.kim/"
+                } else {
+                    extractorLink.referer ?: "https://net77.cc/"
+                }
+                val newRequest = request.newBuilder()
+                    .header("Cookie", cookieVal)
+                    .header("User-Agent", "Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Mobile Safari/537.36")
+                    .header("Referer", refererVal)
+                    .build()
+                return chain.proceed(newRequest)
+            }
+        }
+    }
 
     data class Id(
         val id: String

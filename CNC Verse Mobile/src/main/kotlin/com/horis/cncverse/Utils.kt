@@ -170,6 +170,18 @@ suspend fun resolveApiUrl(): String {
 fun buildNewTvHeaders(ott: String, extra: Map<String, String> = emptyMap()): Map<String, String> {
     val result = newTvBaseHeaders.toMutableMap()
     result["Ott"] = ott
+    val webViewCookie = try {
+        val manager = android.webkit.CookieManager.getInstance()
+        manager.getCookie("https://net77.cc") ?: manager.getCookie("https://net52.cc")
+    } catch (_: Exception) {
+        null
+    }
+    val cookieVal = if (!webViewCookie.isNullOrEmpty()) {
+        "hd=on; ott=$ott; $webViewCookie"
+    } else {
+        "hd=on; ott=$ott"
+    }
+    result["Cookie"] = cookieVal
     extra.forEach { (key, value) ->
         result[key] = value
     }
