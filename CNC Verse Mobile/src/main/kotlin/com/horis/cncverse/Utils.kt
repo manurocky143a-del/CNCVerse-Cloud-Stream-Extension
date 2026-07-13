@@ -111,7 +111,7 @@ val newTvBaseHeaders = mapOf(
     "Pragma" to "no-cache",
     "Expires" to "0",
     "X-Requested-With" to "NetmirrorNewTV v1.0",
-    "User-Agent" to "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:136.0) Gecko/20100101 Firefox/136.0 /OS.GatuNewTV v1.0",
+    "User-Agent" to "Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Mobile Safari/537.36",
     "Accept" to "application/json, text/plain, */*"
 )
 

@@ -1,10 +1,10 @@
 [
     {
         "iconUrl": "https://raw.githubusercontent.com/manurocky143a-del/CNCVerse-Cloud-Stream-Extension/master/CNC%20Verse%20Mobile/logo.jpeg",
-        "fileHash": "sha256-419c788e0592bcca67c9197add44d4275cc1763519056a9d77514ecb3cfa6b4a",
+        "fileHash": "sha256-c924d77ac5e2867ac108e6b553e3a813e13d1dc10f4592fdfb3e8ec15b8f7453",
         "apiVersion": 1,
         "repositoryUrl": "https://github.com/manurocky143a-del/CNCVerse-Cloud-Stream-Extension",
-        "fileSize": 81950,
+        "fileSize": 81825,
         "status": 1,
         "language": "ta",
         "authors": [
