@@ -29,6 +29,7 @@ import com.lagradost.cloudstream3.ui.settings.Globals.isLayout
 
 class Tamilian : TmdbProvider() {
     override var name = "Tamilian"
+    override var mainUrl = HOST
     override val hasMainPage = true
     override var lang = "ta"
     override val instantLinkLoading = true

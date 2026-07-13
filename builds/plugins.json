@@ -1,10 +1,10 @@
 [
     {
         "iconUrl": "https://raw.githubusercontent.com/manurocky143a-del/CNCVerse-Cloud-Stream-Extension/master/CNC%20Verse%20Mobile/logo.jpeg",
-        "fileHash": "sha256-9a47850a6dce03630734b349c90b9a4dbd9f1955ace2559f4a16238897bce019",
+        "fileHash": "sha256-995654544e0adb00e7da8b862821efce1d0ed56f91e199fba2642c93bf377388",
         "apiVersion": 1,
         "repositoryUrl": "https://github.com/manurocky143a-del/CNCVerse-Cloud-Stream-Extension",
-        "fileSize": 83980,
+        "fileSize": 84040,
         "status": 1,
         "language": "ta",
         "authors": [
@@ -14,7 +14,7 @@
             "Movie",
             "TvSeries"
         ],
-        "version": 84,
+        "version": 85,
         "internalName": "CNC Verse Mobile",
         "description": "Netflix, PrimeVideo, Disney+ Hotstar Contents in Multiple Languages",
         "url": "https://raw.githubusercontent.com/manurocky143a-del/CNCVerse-Cloud-Stream-Extension/master/builds/CNC%20Verse%20Mobile.cs3",
